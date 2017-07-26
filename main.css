@@ -1,0 +1,58 @@
+
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css?family=Righteous');
+/* */
+
+/* Reset */
+body { margin: 0; padding: 0; }
+/* */
+
+#game {
+	width: 800px;
+	height: 800px;
+
+	display: block;
+	margin: auto;
+}
+
+#ui {
+	position: absolute;
+
+	height: 500px;
+
+	transform: translate(-50%, -50%);
+	top: 50%;
+	left: 50%;
+	
+}
+
+#ui div {
+	display: none;
+}
+
+a.button {
+	display: block;
+	width: 100%;
+	margin: 16px auto 16px auto;
+	padding: 6px;
+	
+	border: solid 3px #297AFF;
+	background: rgba(0, 0, 0, 0);
+
+	color: #297AFF;
+	font-family: "Righteous", Helvetica, serif;
+	font-size: 24px;
+	text-align: center;
+	text-decoration: none;
+
+	transition: all 0.2s;
+	-moz-transition: all 0.2s;
+	-webkit-transition: all 0.2s;
+}
+
+a.button:hover {
+	background: #FF5B42;
+
+	color: #000;
+	text-decoration: underline;
+}
