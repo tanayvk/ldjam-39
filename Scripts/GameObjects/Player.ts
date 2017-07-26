@@ -9,19 +9,19 @@ module GameObjects {
 		isMoving: boolean;
 
 		constructor(x, y) {
-			this.sprite = Game.game.add.sprite(x, y, "player");
+			this.sprite = UntitledGame.game.add.sprite(x, y, "player");
 			this.sprite.anchor.setTo(0.5, 0.5);
 			this.SPEED = 400;
-			Game.game.physics.arcade.enable(this.sprite);
+			UntitledGame.game.physics.arcade.enable(this.sprite);
 
 			this.health = 100;
-			this.progressBar = new GameObjects.ProgressBar(Game.game.width - 200, 50, 150, 30, this.health);
+			this.progressBar = new GameObjects.ProgressBar(UntitledGame.game.width - 200, 50, 150, 30, this.health);
 			this.progressBar.setColors("#ff1111", "#11ff11");
 		}
 
 		Move() {
 			this.isMoving = true;
-			Game.game.physics.arcade.moveToPointer(this.sprite, this.SPEED);
+			UntitledGame.game.physics.arcade.moveToPointer(this.sprite, this.SPEED);
 		}
 
 		Stop() {
@@ -31,10 +31,10 @@ module GameObjects {
 		}
 
 		isNearPointer() {
-			var mouseX = Game.game.input.mousePointer.x;
-			var mouseY = Game.game.input.mousePointer.y;
+			var mouseX = UntitledGame.game.input.mousePointer.x;
+			var mouseY = UntitledGame.game.input.mousePointer.y;
 
-			if(Phaser.Math.distance(this.sprite.x, this.sprite.y, Game.game.camera.x + mouseX, Game.game.camera.y + mouseY) <= 50){
+			if(Phaser.Math.distance(this.sprite.x, this.sprite.y, UntitledGame.game.camera.x + mouseX, UntitledGame.game.camera.y + mouseY) <= 50){
 				return true;
 			}
 
@@ -42,7 +42,7 @@ module GameObjects {
 		}
 
 		update() {
-			if(Game.game.input.mousePointer.isDown && !this.isNearPointer()) {
+			if(UntitledGame.game.input.mousePointer.isDown && !this.isNearPointer()) {
 				this.Move();
 			}
 			else {
@@ -64,7 +64,7 @@ module GameObjects {
 		}
 
 		gameOver() {
-			Game.game.state.start("game-over", true, false, false);
+			UntitledGame.game.state.start("game-over", true, false, false);
 		}
 	}
 }

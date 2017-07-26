@@ -13,9 +13,10 @@ module GameRooms {
 		create() {
 			this.game.stage.backgroundColor = "#000";
 			this.game.stage.disableVisibilityChange = true;
-			this.game.physics.startSystem(Phaser.Physics.ARCADE);
+			this.game.physics.startSystem( Phaser.Physics.ARCADE );
 			this.game.time.advancedTiming = true;
-			//this.game.state.start("loader"); okay
+			
+			this.game.state.start( "loader" );
 		}
 
 	}

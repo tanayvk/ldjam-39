@@ -18,13 +18,5 @@ module GameRooms {
 		create() {
 		}
 
-		tryAgain() {
-			Game.game.state.start("main-room");
-		}
-
-		mainMenu() {
-			Game.game.state.start("main-menu");
-		}
-
 	}
 }

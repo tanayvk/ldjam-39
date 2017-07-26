@@ -51,8 +51,8 @@ module GameObjects {
 
 		draw() {
 			if(this.fixedCamera) {
-				var cameraX = Game.game.camera.x;
-				var cameraY = Game.game.camera.y;
+				var cameraX = UntitledGame.game.camera.x;
+				var cameraY = UntitledGame.game.camera.y;
 
 				this.backRect = new Phaser.Rectangle(cameraX + this.x, cameraY + this.y, this.width, this.height);
 				this.frontRect = new Phaser.Rectangle(cameraX + this.x, cameraY + this.y, this.getWidth(), this.height);
@@ -61,11 +61,11 @@ module GameObjects {
 				this.backRect = new Phaser.Rectangle(this.x, this.y, this.width, this.height);
 				this.frontRect = new Phaser.Rectangle(this.x, this.y, this.getWidth(), this.height);
 			}
-			Game.game.debug.geom(this.backRect, this.backgroundColor);
-			Game.game.debug.geom(this.frontRect, this.foregroundColor);
+			UntitledGame.game.debug.geom(this.backRect, this.backgroundColor);
+			UntitledGame.game.debug.geom(this.frontRect, this.foregroundColor);
 
 			if(this.showText)
-				Game.game.debug.text(this.text, this.x, this.y - 10, this.textColor);
+				UntitledGame.game.debug.text(this.text, this.x, this.y - 10, this.textColor);
 		}
 	}
 }

@@ -12,17 +12,17 @@ var GameObjects;
 (function (GameObjects) {
     var Player = (function () {
         function Player(x, y) {
-            this.sprite = Game.game.add.sprite(x, y, "player");
+            this.sprite = UntitledGame.game.add.sprite(x, y, "player");
             this.sprite.anchor.setTo(0.5, 0.5);
             this.SPEED = 400;
-            Game.game.physics.arcade.enable(this.sprite);
+            UntitledGame.game.physics.arcade.enable(this.sprite);
             this.health = 100;
-            this.progressBar = new GameObjects.ProgressBar(Game.game.width - 200, 50, 150, 30, this.health);
+            this.progressBar = new GameObjects.ProgressBar(UntitledGame.game.width - 200, 50, 150, 30, this.health);
             this.progressBar.setColors("#ff1111", "#11ff11");
         }
         Player.prototype.Move = function () {
             this.isMoving = true;
-            Game.game.physics.arcade.moveToPointer(this.sprite, this.SPEED);
+            UntitledGame.game.physics.arcade.moveToPointer(this.sprite, this.SPEED);
         };
         Player.prototype.Stop = function () {
             this.isMoving = false;
@@ -30,15 +30,15 @@ var GameObjects;
             this.sprite.body.velocity.y = 0;
         };
         Player.prototype.isNearPointer = function () {
-            var mouseX = Game.game.input.mousePointer.x;
-            var mouseY = Game.game.input.mousePointer.y;
-            if (Phaser.Math.distance(this.sprite.x, this.sprite.y, Game.game.camera.x + mouseX, Game.game.camera.y + mouseY) <= 50) {
+            var mouseX = UntitledGame.game.input.mousePointer.x;
+            var mouseY = UntitledGame.game.input.mousePointer.y;
+            if (Phaser.Math.distance(this.sprite.x, this.sprite.y, UntitledGame.game.camera.x + mouseX, UntitledGame.game.camera.y + mouseY) <= 50) {
                 return true;
             }
             return false;
         };
         Player.prototype.update = function () {
-            if (Game.game.input.mousePointer.isDown && !this.isNearPointer()) {
+            if (UntitledGame.game.input.mousePointer.isDown && !this.isNearPointer()) {
                 this.Move();
             }
             else {
@@ -56,7 +56,7 @@ var GameObjects;
             this.progressBar.draw();
         };
         Player.prototype.gameOver = function () {
-            Game.game.state.start("game-over", true, false, false);
+            UntitledGame.game.state.start("game-over", true, false, false);
         };
         return Player;
     }());
@@ -91,8 +91,8 @@ var GameObjects;
         };
         ProgressBar.prototype.draw = function () {
             if (this.fixedCamera) {
-                var cameraX = Game.game.camera.x;
-                var cameraY = Game.game.camera.y;
+                var cameraX = UntitledGame.game.camera.x;
+                var cameraY = UntitledGame.game.camera.y;
                 this.backRect = new Phaser.Rectangle(cameraX + this.x, cameraY + this.y, this.width, this.height);
                 this.frontRect = new Phaser.Rectangle(cameraX + this.x, cameraY + this.y, this.getWidth(), this.height);
             }
@@ -100,10 +100,10 @@ var GameObjects;
                 this.backRect = new Phaser.Rectangle(this.x, this.y, this.width, this.height);
                 this.frontRect = new Phaser.Rectangle(this.x, this.y, this.getWidth(), this.height);
             }
-            Game.game.debug.geom(this.backRect, this.backgroundColor);
-            Game.game.debug.geom(this.frontRect, this.foregroundColor);
+            UntitledGame.game.debug.geom(this.backRect, this.backgroundColor);
+            UntitledGame.game.debug.geom(this.frontRect, this.foregroundColor);
             if (this.showText)
-                Game.game.debug.text(this.text, this.x, this.y - 10, this.textColor);
+                UntitledGame.game.debug.text(this.text, this.x, this.y - 10, this.textColor);
         };
         return ProgressBar;
     }());
@@ -125,7 +125,7 @@ var GameRooms;
             this.game.stage.disableVisibilityChange = true;
             this.game.physics.startSystem(Phaser.Physics.ARCADE);
             this.game.time.advancedTiming = true;
-            //this.game.state.start("loader"); okay
+            this.game.state.start("loader");
         };
         return Boot;
     }(Phaser.State));
@@ -141,10 +141,11 @@ var GameRooms;
         Loader.prototype.init = function () {
         };
         Loader.prototype.preload = function () {
-            var loaderBar = this.game.add.sprite(this.game.world.centerX - 128, this.game.world.centerY + 256, "loaderBar");
-            this.game.load.setPreloadSprite(loaderBar);
+            // var loaderBar = this.game.add.sprite(this.game.world.centerX - 128, this.game.world.centerY + 256, "loaderBar");
+            // this.game.load.setPreloadSprite(loaderBar);
         };
         Loader.prototype.create = function () {
+            this.game.state.start("main-menu");
         };
         return Loader;
     }(Phaser.State));
@@ -160,8 +161,7 @@ var GameRooms;
         MainMenu.prototype.preload = function () {
         };
         MainMenu.prototype.create = function () {
-        };
-        MainMenu.prototype.newGame = function () {
+            UI.mainMenu.style.display = "block";
         };
         return MainMenu;
     }(Phaser.State));
@@ -176,6 +176,7 @@ var GameRooms;
             return _super.call(this) || this;
         }
         MainRoom.prototype.create = function () {
+            new GameObjects.Player(100, 100);
         };
         MainRoom.prototype.update = function () {
         };
@@ -198,12 +199,6 @@ var GameRooms;
         };
         GameOver.prototype.create = function () {
         };
-        GameOver.prototype.tryAgain = function () {
-            Game.game.state.start("main-room");
-        };
-        GameOver.prototype.mainMenu = function () {
-            Game.game.state.start("main-menu");
-        };
         return GameOver;
     }(Phaser.State));
     GameRooms.GameOver = GameOver;
@@ -214,26 +209,46 @@ var GameRooms;
 /// <reference path="GameRooms/MainMenu.ts" />
 /// <reference path="GameRooms/MainRoom.ts" />
 /// <reference path="GameRooms/GameOver.ts" />
-var Game;
-(function (Game) {
-    var UntitledGame = (function () {
-        function UntitledGame() {
-            Game.game = new Phaser.Game(1000, 750, Phaser.CANVAS, 'game', {
+var UntitledGame;
+(function (UntitledGame) {
+    var Game = (function () {
+        function Game() {
+            UntitledGame.game = new Phaser.Game(800, 800, Phaser.CANVAS, 'game', {
                 create: this.create
             });
         }
-        UntitledGame.prototype.create = function () {
-            Game.game.state.add("boot", GameRooms.Boot);
-            Game.game.state.add("loader", GameRooms.Loader);
-            Game.game.state.add("main-menu", GameRooms.MainMenu);
-            Game.game.state.add("main-room", GameRooms.MainRoom);
-            Game.game.state.add("game-over", GameRooms.GameOver);
-            Game.game.state.start("boot");
+        Game.prototype.create = function () {
+            UntitledGame.game.state.add("boot", GameRooms.Boot);
+            UntitledGame.game.state.add("loader", GameRooms.Loader);
+            UntitledGame.game.state.add("main-menu", GameRooms.MainMenu);
+            UntitledGame.game.state.add("main-room", GameRooms.MainRoom);
+            UntitledGame.game.state.add("game-over", GameRooms.GameOver);
+            UntitledGame.game.state.start("boot");
         };
-        return UntitledGame;
+        return Game;
     }());
-    Game.UntitledGame = UntitledGame;
-})(Game || (Game = {}));
+    UntitledGame.Game = Game;
+})(UntitledGame || (UntitledGame = {}));
 window.onload = function () {
-    var game = new Game.UntitledGame();
+    new UI.UI();
+    new UntitledGame.Game();
 };
+/// <reference path="app.ts" />
+var UI;
+(function (UI_1) {
+    var UI = (function () {
+        function UI() {
+            this.MainMenu();
+        }
+        UI.prototype.MainMenu = function () {
+            UI_1.mainMenu = document.getElementById("mainMenu");
+            var startGame = document.getElementById("startGame");
+            startGame.onclick = function () {
+                UI_1.mainMenu.style.display = "none";
+                UntitledGame.game.state.start("main-room");
+            };
+        };
+        return UI;
+    }());
+    UI_1.UI = UI;
+})(UI || (UI = {}));

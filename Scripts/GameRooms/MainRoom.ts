@@ -8,6 +8,7 @@ module GameRooms {
 		}
 
 		create() {
+			new GameObjects.Player(100, 100);
 		}
 
 		update() {

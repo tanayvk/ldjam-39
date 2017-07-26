@@ -6,13 +6,13 @@
 /// <reference path="GameRooms/MainRoom.ts" />
 /// <reference path="GameRooms/GameOver.ts" />
 
-module Game {
+module UntitledGame {
 	export var game;
 
-	export class UntitledGame {
+	export class Game {
 
 		constructor() {
-			game = new Phaser.Game( 1000, 750, Phaser.CANVAS, 'game', {
+			game = new Phaser.Game( 800, 800, Phaser.CANVAS, 'game', {
 				create: this.create
 			} );
 
@@ -32,5 +32,8 @@ module Game {
 }
 
 window.onload = () => {
-	var game = new Game.UntitledGame();
+
+	new UI.UI();
+	new UntitledGame.Game();
+
 }

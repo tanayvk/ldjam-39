@@ -9,10 +9,7 @@ module GameRooms {
 		}
 
 		create() {
+			UI.mainMenu.style.display = "block";
 		}
-
-		newGame() {
-		}
-
 	}
 }

@@ -9,11 +9,12 @@ module GameRooms {
 		}
 
 		preload() {
-			var loaderBar = this.game.add.sprite(this.game.world.centerX - 128, this.game.world.centerY + 256, "loaderBar");
-			this.game.load.setPreloadSprite(loaderBar);
+			// var loaderBar = this.game.add.sprite(this.game.world.centerX - 128, this.game.world.centerY + 256, "loaderBar");
+			// this.game.load.setPreloadSprite(loaderBar);
 		}
 
 		create() {
+			this.game.state.start( "main-menu" )
 		}
 
 	}

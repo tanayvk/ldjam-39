@@ -13,7 +13,8 @@
     	"Scripts/GameRooms/MainMenu.ts",
     	"Scripts/GameRooms/MainRoom.ts",
 
-    	// Game
-        "Scripts/app.ts"
+		// Game
+		"Scripts/ui.ts",
+		"Scripts/app.ts"
     ]
 }
