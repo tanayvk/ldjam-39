@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+		//"module": "commonjs",
+        "out": "./Scripts/app.js"
+    },
+    "files": [
+    	// Game Objects
+		"Scripts/GameObjects/Player.ts",
+		"Scripts/GameObjects/ProgressBar.ts",
+    	// Game Rooms
+    	"Scripts/GameRooms/Boot.ts",
+    	"Scripts/GameRooms/Loader.ts",
+    	"Scripts/GameRooms/MainMenu.ts",
+    	"Scripts/GameRooms/MainRoom.ts",
+
+    	// Game
+        "Scripts/app.ts"
+    ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "ldjam-39",
+  "author": "Tanay Karnik",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "tsc && concurrently \"tsc -w\" \"lite-server\"",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w"
+  },
+  "main": "./Scripts/app.js",
+  "dependencies": {
+    "concurrently": "^3.5.0",
+    "lite-server": "^2.3.0"
+  }
+}
