@@ -8,10 +8,15 @@ module GameRooms {
 		}
 
 		create() {
-			new GameObjects.Player(100, 100);
+			// Show the menu
+			UI.ui.roomMenu.show();
 		}
 
 		update() {
+		}
+
+		shutdown() {
+			UI.ui.roomMenu.hide();
 		}
 	}
 }

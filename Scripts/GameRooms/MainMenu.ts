@@ -9,7 +9,11 @@ module GameRooms {
 		}
 
 		create() {
-			UI.mainMenu.style.display = "block";
+			UI.ui.mainMenu.show();
+		}
+
+		shutdown() {
+			UI.ui.mainMenu.hide();
 		}
 	}
 }

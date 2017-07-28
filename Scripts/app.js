@@ -161,7 +161,10 @@ var GameRooms;
         MainMenu.prototype.preload = function () {
         };
         MainMenu.prototype.create = function () {
-            UI.mainMenu.style.display = "block";
+            UI.ui.mainMenu.show();
+        };
+        MainMenu.prototype.shutdown = function () {
+            UI.ui.mainMenu.hide();
         };
         return MainMenu;
     }(Phaser.State));
@@ -176,9 +179,13 @@ var GameRooms;
             return _super.call(this) || this;
         }
         MainRoom.prototype.create = function () {
-            new GameObjects.Player(100, 100);
+            // Show the menu
+            UI.ui.roomMenu.show();
         };
         MainRoom.prototype.update = function () {
+        };
+        MainRoom.prototype.shutdown = function () {
+            UI.ui.roomMenu.hide();
         };
         return MainRoom;
     }(Phaser.State));
@@ -230,7 +237,7 @@ var UntitledGame;
     UntitledGame.Game = Game;
 })(UntitledGame || (UntitledGame = {}));
 window.onload = function () {
-    new UI.UI();
+    UI.ui = new UI.UI();
     new UntitledGame.Game();
 };
 /// <reference path="app.ts" />
@@ -238,17 +245,71 @@ var UI;
 (function (UI_1) {
     var UI = (function () {
         function UI() {
-            this.MainMenu();
+            this.mainMenu = new MainMenu();
+            this.roomMenu = new RoomMenu();
         }
-        UI.prototype.MainMenu = function () {
-            UI_1.mainMenu = document.getElementById("mainMenu");
-            var startGame = document.getElementById("startGame");
-            startGame.onclick = function () {
-                UI_1.mainMenu.style.display = "none";
-                UntitledGame.game.state.start("main-room");
-            };
-        };
         return UI;
     }());
     UI_1.UI = UI;
+    var Menu = (function () {
+        function Menu() {
+        }
+        Menu.prototype.show = function () {
+            this.menu.style.display = "block";
+        };
+        Menu.prototype.hide = function () {
+            this.menu.style.display = "none";
+        };
+        return Menu;
+    }());
+    // Menus
+    var MainMenu = (function (_super) {
+        __extends(MainMenu, _super);
+        function MainMenu() {
+            var _this = _super.call(this) || this;
+            _this.menu = document.getElementById("mainMenu");
+            var startGame = document.getElementById("startGameButton");
+            startGame.onclick = function () {
+                UntitledGame.game.state.start("main-room");
+            };
+            _this.hide();
+            return _this;
+        }
+        return MainMenu;
+    }(Menu));
+    var RoomMenu = (function (_super) {
+        __extends(RoomMenu, _super);
+        function RoomMenu() {
+            var _this = _super.call(this) || this;
+            _this.menu = document.getElementById("roomMenu");
+            var pauseButton = document.getElementById("pauseButton");
+            var pauseMenu = document.getElementById("pauseMenu");
+            var pauseOverlay = document.getElementById("pauseOverlay");
+            var continueButton = document.getElementById("continueButton");
+            var backButton = document.getElementById("backButton");
+            pauseButton.onclick = function () {
+                UntitledGame.game.paused = true;
+                pauseMenu.style.display = "block";
+                pauseOverlay.style.display = "block";
+                pauseButton.classList.add("button-no-hover");
+                pauseButton.classList.remove("button");
+            };
+            continueButton.onclick = function () {
+                UntitledGame.game.paused = false;
+                pauseMenu.style.display = "none";
+                pauseOverlay.style.display = "none";
+                pauseButton.classList.add("button");
+                pauseButton.classList.remove("button-no-hover");
+            };
+            backButton.onclick = function () {
+                UntitledGame.game.paused = false;
+                UntitledGame.game.state.start("main-menu");
+            };
+            pauseOverlay.style.display = "none";
+            pauseMenu.style.display = "none";
+            _this.hide();
+            return _this;
+        }
+        return RoomMenu;
+    }(Menu));
 })(UI || (UI = {}));

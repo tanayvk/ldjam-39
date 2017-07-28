@@ -33,7 +33,7 @@ module UntitledGame {
 
 window.onload = () => {
 
-	new UI.UI();
+	UI.ui = new UI.UI();
 	new UntitledGame.Game();
 
 }
