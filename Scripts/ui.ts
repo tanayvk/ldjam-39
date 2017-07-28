@@ -44,48 +44,59 @@ module UI {
     }
 
     class RoomMenu extends Menu {
+        pauseButton = document.getElementById( "pauseButton" );
+        pauseMenu = document.getElementById( "pauseMenu" );
+        pauseOverlay = document.getElementById( "pauseOverlay" ); 
+
+        continueButton = document.getElementById( "continueButton" );
+        backButton = document.getElementById( "backButton" );
+
         constructor() {
             super();
 
             this.menu = document.getElementById( "roomMenu" );
             
-            var pauseButton = document.getElementById( "pauseButton" );
-            var pauseMenu = document.getElementById( "pauseMenu" );
-            var pauseOverlay = document.getElementById( "pauseOverlay" ); 
 
-            var continueButton = document.getElementById( "continueButton" );
-            var backButton = document.getElementById( "backButton" );
-
-            pauseButton.onclick = () => {
-                UntitledGame.game.paused = true;
-
-                pauseMenu.style.display = "block";
-                pauseOverlay.style.display = "block";
-
-                pauseButton.classList.add( "button-no-hover" );
-                pauseButton.classList.remove( "button" );
+            this.pauseButton.onclick = () => {
+                this.pauseGame();
             }
 
-            continueButton.onclick = () => {
-                UntitledGame.game.paused = false;
-                
-                pauseMenu.style.display = "none";
-                pauseOverlay.style.display = "none";
-
-                pauseButton.classList.add( "button" );
-                pauseButton.classList.remove( "button-no-hover" );
-
+            this.continueButton.onclick = () => {
+                this.unpauseGame();
             }
 
-            backButton.onclick = () => {
+            this.backButton.onclick = () => {
                 UntitledGame.game.paused = false;
                 UntitledGame.game.state.start( "main-menu" );
             }
 
-            pauseOverlay.style.display = "none";
-            pauseMenu.style.display = "none";
+            this.pauseOverlay.style.display = "none";
+            this.pauseMenu.style.display = "none";
             this.hide();
         }
-    }
 
+        hide(): void {
+            this.unpauseGame();
+        }
+
+        pauseGame(): void {
+                UntitledGame.game.paused = true;
+
+                this.pauseMenu.style.display = "block";
+                this.pauseOverlay.style.display = "block";
+
+                this.pauseButton.classList.add( "button-no-hover" );
+                this.pauseButton.classList.remove( "button" );
+        }
+
+        unpauseGame(): void {
+            UntitledGame.game.paused = false;
+            
+            this.pauseMenu.style.display = "none";
+            this.pauseOverlay.style.display = "none";
+
+            this.pauseButton.classList.add( "button" );
+            this.pauseButton.classList.remove( "button-no-hover" );
+        }
+    }
 }

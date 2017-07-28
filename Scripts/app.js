@@ -237,8 +237,8 @@ var UntitledGame;
     UntitledGame.Game = Game;
 })(UntitledGame || (UntitledGame = {}));
 window.onload = function () {
-    UI.ui = new UI.UI();
     new UntitledGame.Game();
+    UI.ui = new UI.UI();
 };
 /// <reference path="app.ts" />
 var UI;
@@ -281,35 +281,44 @@ var UI;
         __extends(RoomMenu, _super);
         function RoomMenu() {
             var _this = _super.call(this) || this;
+            _this.pauseButton = document.getElementById("pauseButton");
+            _this.pauseMenu = document.getElementById("pauseMenu");
+            _this.pauseOverlay = document.getElementById("pauseOverlay");
+            _this.continueButton = document.getElementById("continueButton");
+            _this.backButton = document.getElementById("backButton");
             _this.menu = document.getElementById("roomMenu");
-            var pauseButton = document.getElementById("pauseButton");
-            var pauseMenu = document.getElementById("pauseMenu");
-            var pauseOverlay = document.getElementById("pauseOverlay");
-            var continueButton = document.getElementById("continueButton");
-            var backButton = document.getElementById("backButton");
-            pauseButton.onclick = function () {
-                UntitledGame.game.paused = true;
-                pauseMenu.style.display = "block";
-                pauseOverlay.style.display = "block";
-                pauseButton.classList.add("button-no-hover");
-                pauseButton.classList.remove("button");
+            _this.pauseButton.onclick = function () {
+                _this.pauseGame();
             };
-            continueButton.onclick = function () {
-                UntitledGame.game.paused = false;
-                pauseMenu.style.display = "none";
-                pauseOverlay.style.display = "none";
-                pauseButton.classList.add("button");
-                pauseButton.classList.remove("button-no-hover");
+            _this.continueButton.onclick = function () {
+                _this.unpauseGame();
             };
-            backButton.onclick = function () {
+            _this.backButton.onclick = function () {
                 UntitledGame.game.paused = false;
                 UntitledGame.game.state.start("main-menu");
             };
-            pauseOverlay.style.display = "none";
-            pauseMenu.style.display = "none";
+            _this.pauseOverlay.style.display = "none";
+            _this.pauseMenu.style.display = "none";
             _this.hide();
             return _this;
         }
+        RoomMenu.prototype.hide = function () {
+            this.unpauseGame();
+        };
+        RoomMenu.prototype.pauseGame = function () {
+            UntitledGame.game.paused = true;
+            this.pauseMenu.style.display = "block";
+            this.pauseOverlay.style.display = "block";
+            this.pauseButton.classList.add("button-no-hover");
+            this.pauseButton.classList.remove("button");
+        };
+        RoomMenu.prototype.unpauseGame = function () {
+            UntitledGame.game.paused = false;
+            this.pauseMenu.style.display = "none";
+            this.pauseOverlay.style.display = "none";
+            this.pauseButton.classList.add("button");
+            this.pauseButton.classList.remove("button-no-hover");
+        };
         return RoomMenu;
     }(Menu));
 })(UI || (UI = {}));
