@@ -77,6 +77,7 @@ module UI {
 
         hide(): void {
             this.unpauseGame();
+            this.menu.style.display = "none";
         }
 
         pauseGame(): void {

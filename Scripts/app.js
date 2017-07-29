@@ -304,6 +304,7 @@ var UI;
         }
         RoomMenu.prototype.hide = function () {
             this.unpauseGame();
+            this.menu.style.display = "none";
         };
         RoomMenu.prototype.pauseGame = function () {
             UntitledGame.game.paused = true;
