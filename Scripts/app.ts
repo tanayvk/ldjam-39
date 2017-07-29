@@ -12,7 +12,7 @@ module UntitledGame {
 	export class Game {
 
 		constructor() {
-			game = new Phaser.Game( 800, 800, Phaser.CANVAS, 'game', {
+			game = new Phaser.Game( 900, 900, Phaser.CANVAS, 'game', {
 				create: this.create
 			} );
 

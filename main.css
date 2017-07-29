@@ -21,21 +21,15 @@ body { margin: 0; padding: 0; }
 	transform: translate(-50%, -50%);
 }
 
-/* UI */
-
-#ui {
-	position: absolute;
-	
-	width: 100%;
-	height: 100%;
-
-	top: 0;
-	left: 0;
-}
-
-#ui div {
+#game div, a {
 	display: none;
 }
+
+#game div {
+	position: absolute;
+}
+
+/* UI */
 
 a.button, a.button-no-hover {
 	display: block;
@@ -76,20 +70,16 @@ a.button:hover {
 	left: 50%;
 }
 
-#roomMenu {
-	width: 100%;
-	height: 100%;
-}
+#pauseButton {
+	position: absolute;
 
-#roomMenu #pauseButton {
+	top: 5px;
+	right: 5px;
+
 	width: auto;
 	height: auto;
 	
-	margin-top: 10px;
-	margin-right: 10px;
-	
 	padding: 2px 8px 2px 8px;
-	float: right;
 }
 
 #pauseOverlay {
@@ -97,7 +87,7 @@ a.button:hover {
 	height: 100%;
 	display: block;
 
-	background: rgba(255, 255, 255, 0.4); 
+	background: rgba(255, 255, 255, 0.4);
 }
 
 #pauseMenu .button{

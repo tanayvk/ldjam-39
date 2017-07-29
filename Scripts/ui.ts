@@ -6,40 +6,56 @@ module UI {
     export class UI {
         public mainMenu: Menu;
         public roomMenu: Menu;
+        public mouseDown: boolean;
 
         constructor() {
             this.mainMenu = new MainMenu();
             this.roomMenu = new RoomMenu();
+
+            this.mouseEvents();
+        }
+
+        mouseEvents() {
+            var ui = this;
+
+            document.body.onmousedown = function() { 
+                ui.mouseDown = true;
+            }
+            document.body.onmouseup = function() {
+                ui.mouseDown = false;
+            }
         }
     }
 
 
     class Menu {
-        menu: HTMLElement;
-
-        show(): void {
-            this.menu.style.display = "block";
-        }
-
-        hide(): void {
-            this.menu.style.display = "none";
-        }
+        show(): void {}
+        hide(): void {}
     }
 
     // Menus
     
     class MainMenu extends Menu {
+        menu: HTMLElement;
         constructor() {
             super();
 
             this.menu = document.getElementById( "mainMenu" );
             var startGame = document.getElementById( "startGameButton" );
-            
+
             startGame.onclick = () => {
                 UntitledGame.game.state.start( "main-room" );
             }
             
             this.hide();
+        }
+
+        show() {
+            this.menu.style.display = "block";
+        }  
+
+        hide() {
+            this.menu.style.display = "none";
         }
     }
 
@@ -53,9 +69,6 @@ module UI {
 
         constructor() {
             super();
-
-            this.menu = document.getElementById( "roomMenu" );
-            
 
             this.pauseButton.onclick = () => {
                 this.pauseGame();
@@ -75,9 +88,13 @@ module UI {
             this.hide();
         }
 
+        show(): void {
+            this.pauseButton.style.display = "block";
+        }
+
         hide(): void {
             this.unpauseGame();
-            this.menu.style.display = "none";
+            this.pauseButton.style.display = "none";
         }
 
         pauseGame(): void {

@@ -10,8 +10,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var GameObjects;
 (function (GameObjects) {
-    var Player = (function () {
-        function Player(x, y) {
+    var SpaceShip = (function () {
+        function SpaceShip(x, y) {
             this.sprite = UntitledGame.game.add.sprite(x, y, "player");
             this.sprite.anchor.setTo(0.5, 0.5);
             this.SPEED = 400;
@@ -20,16 +20,16 @@ var GameObjects;
             this.progressBar = new GameObjects.ProgressBar(UntitledGame.game.width - 200, 50, 150, 30, this.health);
             this.progressBar.setColors("#ff1111", "#11ff11");
         }
-        Player.prototype.Move = function () {
+        SpaceShip.prototype.Move = function () {
             this.isMoving = true;
             UntitledGame.game.physics.arcade.moveToPointer(this.sprite, this.SPEED);
         };
-        Player.prototype.Stop = function () {
+        SpaceShip.prototype.Stop = function () {
             this.isMoving = false;
             this.sprite.body.velocity.x = 0;
             this.sprite.body.velocity.y = 0;
         };
-        Player.prototype.isNearPointer = function () {
+        SpaceShip.prototype.isNearPointer = function () {
             var mouseX = UntitledGame.game.input.mousePointer.x;
             var mouseY = UntitledGame.game.input.mousePointer.y;
             if (Phaser.Math.distance(this.sprite.x, this.sprite.y, UntitledGame.game.camera.x + mouseX, UntitledGame.game.camera.y + mouseY) <= 50) {
@@ -37,7 +37,7 @@ var GameObjects;
             }
             return false;
         };
-        Player.prototype.update = function () {
+        SpaceShip.prototype.update = function () {
             if (UntitledGame.game.input.mousePointer.isDown && !this.isNearPointer()) {
                 this.Move();
             }
@@ -48,19 +48,19 @@ var GameObjects;
                 this.gameOver();
             }
         };
-        Player.prototype.render = function () {
+        SpaceShip.prototype.render = function () {
             this.renderHealth();
         };
-        Player.prototype.renderHealth = function () {
+        SpaceShip.prototype.renderHealth = function () {
             this.progressBar.percent = this.health;
             this.progressBar.draw();
         };
-        Player.prototype.gameOver = function () {
+        SpaceShip.prototype.gameOver = function () {
             UntitledGame.game.state.start("game-over", true, false, false);
         };
-        return Player;
+        return SpaceShip;
     }());
-    GameObjects.Player = Player;
+    GameObjects.SpaceShip = SpaceShip;
 })(GameObjects || (GameObjects = {}));
 var GameObjects;
 (function (GameObjects) {
@@ -117,14 +117,12 @@ var GameRooms;
             return _super.call(this) || this;
         }
         Boot.prototype.preload = function () {
-            // Load resources for the loader state
-            //this.game.load.image("loaderBar", "Assets/images/loader_bar.png");
+            this.game.load.image("loaderBar", "Assets/images/loader_bar.png");
         };
         Boot.prototype.create = function () {
             this.game.stage.backgroundColor = "#000";
-            this.game.stage.disableVisibilityChange = true;
+            this.game.stage.disableVisibilityChange = true; // doesn't pause the game on changing focus
             this.game.physics.startSystem(Phaser.Physics.ARCADE);
-            this.game.time.advancedTiming = true;
             this.game.state.start("loader");
         };
         return Boot;
@@ -141,8 +139,9 @@ var GameRooms;
         Loader.prototype.init = function () {
         };
         Loader.prototype.preload = function () {
-            // var loaderBar = this.game.add.sprite(this.game.world.centerX - 128, this.game.world.centerY + 256, "loaderBar");
-            // this.game.load.setPreloadSprite(loaderBar);
+            var loaderBar = this.game.add.sprite(this.game.world.centerX - 128, this.game.world.centerY + 256, "loaderBar");
+            this.game.load.setPreloadSprite(loaderBar);
+            this.game.load.image("spaceship", "Assets/Images/spaceship.png");
         };
         Loader.prototype.create = function () {
             this.game.state.start("main-menu");
@@ -169,27 +168,6 @@ var GameRooms;
         return MainMenu;
     }(Phaser.State));
     GameRooms.MainMenu = MainMenu;
-})(GameRooms || (GameRooms = {}));
-/// <reference path="../GameObjects/ProgressBar.ts" />
-var GameRooms;
-(function (GameRooms) {
-    var MainRoom = (function (_super) {
-        __extends(MainRoom, _super);
-        function MainRoom() {
-            return _super.call(this) || this;
-        }
-        MainRoom.prototype.create = function () {
-            // Show the menu
-            UI.ui.roomMenu.show();
-        };
-        MainRoom.prototype.update = function () {
-        };
-        MainRoom.prototype.shutdown = function () {
-            UI.ui.roomMenu.hide();
-        };
-        return MainRoom;
-    }(Phaser.State));
-    GameRooms.MainRoom = MainRoom;
 })(GameRooms || (GameRooms = {}));
 var GameRooms;
 (function (GameRooms) {
@@ -220,7 +198,7 @@ var UntitledGame;
 (function (UntitledGame) {
     var Game = (function () {
         function Game() {
-            UntitledGame.game = new Phaser.Game(800, 800, Phaser.CANVAS, 'game', {
+            UntitledGame.game = new Phaser.Game(900, 900, Phaser.CANVAS, 'game', {
                 create: this.create
             });
         }
@@ -240,6 +218,75 @@ window.onload = function () {
     new UntitledGame.Game();
     UI.ui = new UI.UI();
 };
+/// <reference path="../app.ts" />
+var GameObjects;
+(function (GameObjects) {
+    var SpaceShip = (function () {
+        function SpaceShip(x, y) {
+            this.sprite = UntitledGame.game.add.sprite(x, y, "spaceship");
+            this.sprite.anchor.setTo(0.5, 0.5);
+            this.SPEED = 300;
+            UntitledGame.game.physics.arcade.enable(this.sprite);
+        }
+        SpaceShip.prototype.Move = function () {
+            this.isMoving = true;
+            UntitledGame.game.physics.arcade.moveToPointer(this.sprite, this.getSpeed() * UntitledGame.game.time.physicsElapsed);
+        };
+        SpaceShip.prototype.Stop = function () {
+            this.isMoving = false;
+            this.sprite.body.velocity.x = 0;
+            this.sprite.body.velocity.y = 0;
+        };
+        SpaceShip.prototype.update = function () {
+            if (UI.ui.mouseDown) {
+                this.Move();
+            }
+            else {
+                this.Stop();
+            }
+        };
+        SpaceShip.prototype.render = function () {
+            this.renderHealth();
+        };
+        SpaceShip.prototype.renderHealth = function () {
+            this.progressBar.percent = this.health;
+            this.progressBar.draw();
+        };
+        SpaceShip.prototype.getSpeed = function () {
+            var speed;
+            var mouseX = UntitledGame.game.input.mousePointer.x;
+            var mouseY = UntitledGame.game.input.mousePointer.y;
+            var distance = Phaser.Math.distance(this.sprite.x, this.sprite.y, UntitledGame.game.camera.x + mouseX, UntitledGame.game.camera.y + mouseY);
+            return distance * this.SPEED;
+        };
+        return SpaceShip;
+    }());
+    GameObjects.SpaceShip = SpaceShip;
+})(GameObjects || (GameObjects = {}));
+/// <reference path="../GameObjects/ProgressBar.ts" />
+/// <reference path="../GameObjects/SpaceShip.ts" />
+var GameRooms;
+(function (GameRooms) {
+    var MainRoom = (function (_super) {
+        __extends(MainRoom, _super);
+        function MainRoom() {
+            return _super.call(this) || this;
+        }
+        MainRoom.prototype.create = function () {
+            // Show the menu
+            UI.ui.roomMenu.show();
+            this.spaceShip = new GameObjects.SpaceShip(100, 100);
+        };
+        MainRoom.prototype.update = function () {
+            this.spaceShip.update();
+        };
+        MainRoom.prototype.shutdown = function () {
+            UI.ui.roomMenu.hide();
+        };
+        return MainRoom;
+    }(Phaser.State));
+    GameRooms.MainRoom = MainRoom;
+})(GameRooms || (GameRooms = {}));
 /// <reference path="app.ts" />
 var UI;
 (function (UI_1) {
@@ -247,19 +294,25 @@ var UI;
         function UI() {
             this.mainMenu = new MainMenu();
             this.roomMenu = new RoomMenu();
+            this.mouseEvents();
         }
+        UI.prototype.mouseEvents = function () {
+            var ui = this;
+            document.body.onmousedown = function () {
+                ui.mouseDown = true;
+            };
+            document.body.onmouseup = function () {
+                ui.mouseDown = false;
+            };
+        };
         return UI;
     }());
     UI_1.UI = UI;
     var Menu = (function () {
         function Menu() {
         }
-        Menu.prototype.show = function () {
-            this.menu.style.display = "block";
-        };
-        Menu.prototype.hide = function () {
-            this.menu.style.display = "none";
-        };
+        Menu.prototype.show = function () { };
+        Menu.prototype.hide = function () { };
         return Menu;
     }());
     // Menus
@@ -275,6 +328,12 @@ var UI;
             _this.hide();
             return _this;
         }
+        MainMenu.prototype.show = function () {
+            this.menu.style.display = "block";
+        };
+        MainMenu.prototype.hide = function () {
+            this.menu.style.display = "none";
+        };
         return MainMenu;
     }(Menu));
     var RoomMenu = (function (_super) {
@@ -286,7 +345,6 @@ var UI;
             _this.pauseOverlay = document.getElementById("pauseOverlay");
             _this.continueButton = document.getElementById("continueButton");
             _this.backButton = document.getElementById("backButton");
-            _this.menu = document.getElementById("roomMenu");
             _this.pauseButton.onclick = function () {
                 _this.pauseGame();
             };
@@ -302,9 +360,12 @@ var UI;
             _this.hide();
             return _this;
         }
+        RoomMenu.prototype.show = function () {
+            this.pauseButton.style.display = "block";
+        };
         RoomMenu.prototype.hide = function () {
             this.unpauseGame();
-            this.menu.style.display = "none";
+            this.pauseButton.style.display = "none";
         };
         RoomMenu.prototype.pauseGame = function () {
             UntitledGame.game.paused = true;
