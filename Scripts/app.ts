@@ -8,7 +8,7 @@
 
 module UntitledGame {
 	export var game;
-
+	export var tint = 0x234252;
 	export class Game {
 
 		constructor() {
@@ -26,6 +26,8 @@ module UntitledGame {
 			game.state.add( "game-over", GameRooms.GameOver );
 
 			game.state.start( "boot" );
+
+			game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
 		}
 
 	}

@@ -13,6 +13,7 @@ module GameRooms {
 			this.game.load.setPreloadSprite( loaderBar );
 
 			this.game.load.image( "spaceship", "Assets/Images/spaceship.png" );
+			this.game.load.image( "bomb", "Assets/Images/bomb.png" );
 		}
 
 		create() {

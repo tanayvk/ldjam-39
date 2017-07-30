@@ -2,59 +2,54 @@
 
 module GameObjects {
 	export class SpaceShip {
-		health: number;
-		progressBar;
-
 		sprite: Phaser.Sprite;
-		SPEED: number;
+		cursors;
 
-		isMoving: boolean;
+		MAX_SPEED = 300;
+		BOMB_SPEED = 3000;
 
 		constructor(x, y) {
 			this.sprite = UntitledGame.game.add.sprite( x, y, "spaceship" );
+			this.sprite.tint = 0x7021FF;
 			this.sprite.anchor.setTo(0.5, 0.5);
-			this.SPEED = 300;
 
 			UntitledGame.game.physics.arcade.enable(this.sprite);
-		}
+			
+			this.sprite.body.drag.set(100);
+			this.sprite.body.maxVelocity.set(this.MAX_SPEED);
 
-		Move() {
-			this.isMoving = true;
-			UntitledGame.game.physics.arcade.moveToPointer(this.sprite, this.getSpeed()*UntitledGame.game.time.physicsElapsed);
-		}
+			this.cursors = UntitledGame.game.input.keyboard.createCursorKeys();
 
-		Stop() {
-			this.isMoving = false;
-			this.sprite.body.velocity.x = 0;
-			this.sprite.body.velocity.y = 0;
+			this.handleBombs();
 		}
 
 		update() {
-			if(UI.ui.mouseDown) {
-				this.Move();
-			}
-			else {
-				this.Stop();
-			}
+
+			if (this.cursors.up.isDown)
+				UntitledGame.game.physics.arcade.accelerationFromRotation(this.sprite.rotation, 2000, this.sprite.body.acceleration);
+			else if (this.cursors.down.isDown)
+				UntitledGame.game.physics.arcade.accelerationFromRotation(this.sprite.rotation, -200, this.sprite.body.acceleration);	
+			else
+				this.sprite.body.acceleration.set(0);
+
+			if (this.cursors.left.isDown)
+				this.sprite.body.angularVelocity = -300;
+			else if (this.cursors.right.isDown)
+				this.sprite.body.angularVelocity = 300;
+			else
+				this.sprite.body.angularVelocity = 0;
 		}
 
-		render() {
-			this.renderHealth();
-		}
+		handleBombs() {
+			var ship = this;
+			UntitledGame.game.input.onDown.add(function() {
+				var bomb = new GameObjects.Bomb(ship.sprite.x, ship.sprite.y, ship.BOMB_SPEED);
+				
+				bomb.shootTowards(UntitledGame.game.input.x, UntitledGame.game.input.y);
 
-		renderHealth() {
-			this.progressBar.percent = this.health;
-			this.progressBar.draw();
-		}
 
-		getSpeed():number {
-			var speed: number;
-
-			var mouseX = UntitledGame.game.input.mousePointer.x;
-			var mouseY = UntitledGame.game.input.mousePointer.y;
-			var distance = Phaser.Math.distance(this.sprite.x, this.sprite.y, UntitledGame.game.camera.x + mouseX, UntitledGame.game.camera.y + mouseY);
-			
-			return distance*this.SPEED;
+				bomb.tweenTint(0xFF8925, 0x3EFF46, 1000); // a shade of orage to a shade of lime
+			});
 		}
 	}
 }

@@ -6,7 +6,7 @@ module UI {
     export class UI {
         public mainMenu: Menu;
         public roomMenu: Menu;
-        public mouseDown: boolean;
+        public mouseLeftDown: boolean;
 
         constructor() {
             this.mainMenu = new MainMenu();
@@ -18,11 +18,13 @@ module UI {
         mouseEvents() {
             var ui = this;
 
-            document.body.onmousedown = function() { 
-                ui.mouseDown = true;
+            document.onmousedown = function(e) { 
+                if(e.which == 1) // code 1 means left button
+                    ui.mouseLeftDown = true;
             }
-            document.body.onmouseup = function() {
-                ui.mouseDown = false;
+            document.onmouseup = function(e) {
+                if(e.which == 1) // code 1 means left button
+                    ui.mouseLeftDown = false;
             }
         }
     }

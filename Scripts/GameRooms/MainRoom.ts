@@ -14,7 +14,8 @@ module GameRooms {
 			// Show the menu
 			UI.ui.roomMenu.show();
 
-			this.spaceShip = new GameObjects.SpaceShip(100, 100);
+			this.spaceShip = new GameObjects.SpaceShip(400, 400);
+			UntitledGame.game.camera.follow(this.spaceShip.sprite);
 		}
 
 		update() {

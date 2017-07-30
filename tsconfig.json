@@ -4,8 +4,9 @@
         "out": "./Scripts/app.js"
     },
     "files": [
-    	// Game Objects
-		"Scripts/GameObjects/Player.ts",
+		// Game Objects
+		"Scripts/GameObjects/Bomb.ts",
+		"Scripts/GameObjects/SpaceShip.ts",
 		"Scripts/GameObjects/ProgressBar.ts",
     	// Game Rooms
     	"Scripts/GameRooms/Boot.ts",

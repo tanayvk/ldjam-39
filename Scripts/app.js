@@ -8,60 +8,67 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var GameObjects;
-(function (GameObjects) {
-    var SpaceShip = (function () {
-        function SpaceShip(x, y) {
-            this.sprite = UntitledGame.game.add.sprite(x, y, "player");
-            this.sprite.anchor.setTo(0.5, 0.5);
-            this.SPEED = 400;
-            UntitledGame.game.physics.arcade.enable(this.sprite);
-            this.health = 100;
-            this.progressBar = new GameObjects.ProgressBar(UntitledGame.game.width - 200, 50, 150, 30, this.health);
-            this.progressBar.setColors("#ff1111", "#11ff11");
+var GameRooms;
+(function (GameRooms) {
+    var Boot = (function (_super) {
+        __extends(Boot, _super);
+        function Boot() {
+            return _super.call(this) || this;
         }
-        SpaceShip.prototype.Move = function () {
-            this.isMoving = true;
-            UntitledGame.game.physics.arcade.moveToPointer(this.sprite, this.SPEED);
+        Boot.prototype.preload = function () {
+            this.game.load.image("loaderBar", "Assets/images/loader_bar.png");
         };
-        SpaceShip.prototype.Stop = function () {
-            this.isMoving = false;
-            this.sprite.body.velocity.x = 0;
-            this.sprite.body.velocity.y = 0;
+        Boot.prototype.create = function () {
+            this.game.stage.backgroundColor = "#000";
+            this.game.stage.disableVisibilityChange = true; // doesn't pause the game on changing focus
+            this.game.physics.startSystem(Phaser.Physics.ARCADE);
+            this.game.state.start("loader");
         };
-        SpaceShip.prototype.isNearPointer = function () {
-            var mouseX = UntitledGame.game.input.mousePointer.x;
-            var mouseY = UntitledGame.game.input.mousePointer.y;
-            if (Phaser.Math.distance(this.sprite.x, this.sprite.y, UntitledGame.game.camera.x + mouseX, UntitledGame.game.camera.y + mouseY) <= 50) {
-                return true;
-            }
-            return false;
+        return Boot;
+    }(Phaser.State));
+    GameRooms.Boot = Boot;
+})(GameRooms || (GameRooms = {}));
+var GameRooms;
+(function (GameRooms) {
+    var Loader = (function (_super) {
+        __extends(Loader, _super);
+        function Loader() {
+            return _super.call(this) || this;
+        }
+        Loader.prototype.init = function () {
         };
-        SpaceShip.prototype.update = function () {
-            if (UntitledGame.game.input.mousePointer.isDown && !this.isNearPointer()) {
-                this.Move();
-            }
-            else {
-                this.Stop();
-            }
-            if (this.health <= 0) {
-                this.gameOver();
-            }
+        Loader.prototype.preload = function () {
+            var loaderBar = this.game.add.sprite(this.game.world.centerX - 128, this.game.world.centerY + 256, "loaderBar");
+            this.game.load.setPreloadSprite(loaderBar);
+            this.game.load.image("spaceship", "Assets/Images/spaceship.png");
+            this.game.load.image("bomb", "Assets/Images/bomb.png");
         };
-        SpaceShip.prototype.render = function () {
-            this.renderHealth();
+        Loader.prototype.create = function () {
+            this.game.state.start("main-menu");
         };
-        SpaceShip.prototype.renderHealth = function () {
-            this.progressBar.percent = this.health;
-            this.progressBar.draw();
+        return Loader;
+    }(Phaser.State));
+    GameRooms.Loader = Loader;
+})(GameRooms || (GameRooms = {}));
+var GameRooms;
+(function (GameRooms) {
+    var MainMenu = (function (_super) {
+        __extends(MainMenu, _super);
+        function MainMenu() {
+            return _super.call(this) || this;
+        }
+        MainMenu.prototype.preload = function () {
         };
-        SpaceShip.prototype.gameOver = function () {
-            UntitledGame.game.state.start("game-over", true, false, false);
+        MainMenu.prototype.create = function () {
+            UI.ui.mainMenu.show();
         };
-        return SpaceShip;
-    }());
-    GameObjects.SpaceShip = SpaceShip;
-})(GameObjects || (GameObjects = {}));
+        MainMenu.prototype.shutdown = function () {
+            UI.ui.mainMenu.hide();
+        };
+        return MainMenu;
+    }(Phaser.State));
+    GameRooms.MainMenu = MainMenu;
+})(GameRooms || (GameRooms = {}));
 var GameObjects;
 (function (GameObjects) {
     var ProgressBar = (function () {
@@ -109,65 +116,72 @@ var GameObjects;
     }());
     GameObjects.ProgressBar = ProgressBar;
 })(GameObjects || (GameObjects = {}));
+/// <reference path="../app.ts" />
+var GameObjects;
+(function (GameObjects) {
+    var SpaceShip = (function () {
+        function SpaceShip(x, y) {
+            this.MAX_SPEED = 300;
+            this.BOMB_SPEED = 3000;
+            this.sprite = UntitledGame.game.add.sprite(x, y, "spaceship");
+            this.sprite.tint = 0x7021FF;
+            this.sprite.anchor.setTo(0.5, 0.5);
+            UntitledGame.game.physics.arcade.enable(this.sprite);
+            this.sprite.body.drag.set(100);
+            this.sprite.body.maxVelocity.set(this.MAX_SPEED);
+            this.cursors = UntitledGame.game.input.keyboard.createCursorKeys();
+            this.handleBombs();
+        }
+        SpaceShip.prototype.update = function () {
+            if (this.cursors.up.isDown)
+                UntitledGame.game.physics.arcade.accelerationFromRotation(this.sprite.rotation, 2000, this.sprite.body.acceleration);
+            else if (this.cursors.down.isDown)
+                UntitledGame.game.physics.arcade.accelerationFromRotation(this.sprite.rotation, -200, this.sprite.body.acceleration);
+            else
+                this.sprite.body.acceleration.set(0);
+            if (this.cursors.left.isDown)
+                this.sprite.body.angularVelocity = -300;
+            else if (this.cursors.right.isDown)
+                this.sprite.body.angularVelocity = 300;
+            else
+                this.sprite.body.angularVelocity = 0;
+        };
+        SpaceShip.prototype.handleBombs = function () {
+            var ship = this;
+            UntitledGame.game.input.onDown.add(function () {
+                var bomb = new GameObjects.Bomb(ship.sprite.x, ship.sprite.y, ship.BOMB_SPEED);
+                bomb.shootTowards(UntitledGame.game.input.x, UntitledGame.game.input.y);
+                bomb.tweenTint(0xFF8925, 0x3EFF46, 1000); // a shade of orage to a shade of lime
+            });
+        };
+        return SpaceShip;
+    }());
+    GameObjects.SpaceShip = SpaceShip;
+})(GameObjects || (GameObjects = {}));
+/// <reference path="../GameObjects/ProgressBar.ts" />
+/// <reference path="../GameObjects/SpaceShip.ts" />
 var GameRooms;
 (function (GameRooms) {
-    var Boot = (function (_super) {
-        __extends(Boot, _super);
-        function Boot() {
+    var MainRoom = (function (_super) {
+        __extends(MainRoom, _super);
+        function MainRoom() {
             return _super.call(this) || this;
         }
-        Boot.prototype.preload = function () {
-            this.game.load.image("loaderBar", "Assets/images/loader_bar.png");
+        MainRoom.prototype.create = function () {
+            // Show the menu
+            UI.ui.roomMenu.show();
+            this.spaceShip = new GameObjects.SpaceShip(400, 400);
+            UntitledGame.game.camera.follow(this.spaceShip.sprite);
         };
-        Boot.prototype.create = function () {
-            this.game.stage.backgroundColor = "#000";
-            this.game.stage.disableVisibilityChange = true; // doesn't pause the game on changing focus
-            this.game.physics.startSystem(Phaser.Physics.ARCADE);
-            this.game.state.start("loader");
+        MainRoom.prototype.update = function () {
+            this.spaceShip.update();
         };
-        return Boot;
+        MainRoom.prototype.shutdown = function () {
+            UI.ui.roomMenu.hide();
+        };
+        return MainRoom;
     }(Phaser.State));
-    GameRooms.Boot = Boot;
-})(GameRooms || (GameRooms = {}));
-var GameRooms;
-(function (GameRooms) {
-    var Loader = (function (_super) {
-        __extends(Loader, _super);
-        function Loader() {
-            return _super.call(this) || this;
-        }
-        Loader.prototype.init = function () {
-        };
-        Loader.prototype.preload = function () {
-            var loaderBar = this.game.add.sprite(this.game.world.centerX - 128, this.game.world.centerY + 256, "loaderBar");
-            this.game.load.setPreloadSprite(loaderBar);
-            this.game.load.image("spaceship", "Assets/Images/spaceship.png");
-        };
-        Loader.prototype.create = function () {
-            this.game.state.start("main-menu");
-        };
-        return Loader;
-    }(Phaser.State));
-    GameRooms.Loader = Loader;
-})(GameRooms || (GameRooms = {}));
-var GameRooms;
-(function (GameRooms) {
-    var MainMenu = (function (_super) {
-        __extends(MainMenu, _super);
-        function MainMenu() {
-            return _super.call(this) || this;
-        }
-        MainMenu.prototype.preload = function () {
-        };
-        MainMenu.prototype.create = function () {
-            UI.ui.mainMenu.show();
-        };
-        MainMenu.prototype.shutdown = function () {
-            UI.ui.mainMenu.hide();
-        };
-        return MainMenu;
-    }(Phaser.State));
-    GameRooms.MainMenu = MainMenu;
+    GameRooms.MainRoom = MainRoom;
 })(GameRooms || (GameRooms = {}));
 var GameRooms;
 (function (GameRooms) {
@@ -196,6 +210,7 @@ var GameRooms;
 /// <reference path="GameRooms/GameOver.ts" />
 var UntitledGame;
 (function (UntitledGame) {
+    UntitledGame.tint = 0x234252;
     var Game = (function () {
         function Game() {
             UntitledGame.game = new Phaser.Game(900, 900, Phaser.CANVAS, 'game', {
@@ -209,6 +224,7 @@ var UntitledGame;
             UntitledGame.game.state.add("main-room", GameRooms.MainRoom);
             UntitledGame.game.state.add("game-over", GameRooms.GameOver);
             UntitledGame.game.state.start("boot");
+            UntitledGame.game.canvas.oncontextmenu = function (e) { e.preventDefault(); };
         };
         return Game;
     }());
@@ -218,75 +234,39 @@ window.onload = function () {
     new UntitledGame.Game();
     UI.ui = new UI.UI();
 };
-/// <reference path="../app.ts" />
+/// <reference path="../app.ts"/>
 var GameObjects;
 (function (GameObjects) {
-    var SpaceShip = (function () {
-        function SpaceShip(x, y) {
-            this.sprite = UntitledGame.game.add.sprite(x, y, "spaceship");
-            this.sprite.anchor.setTo(0.5, 0.5);
-            this.SPEED = 300;
+    var Bomb = (function () {
+        function Bomb(x, y, initialSpeed) {
+            this.speed = initialSpeed;
+            this.sprite = UntitledGame.game.add.sprite(x, y, "bomb");
             UntitledGame.game.physics.arcade.enable(this.sprite);
+            this.sprite.anchor.setTo(0.5, 0.5);
+            this.sprite.update = function () {
+                this.body.acceleration.setTo(-5 * this.body.velocity.x ^ 3, -5 * this.body.velocity.y ^ 3);
+            };
         }
-        SpaceShip.prototype.Move = function () {
-            this.isMoving = true;
-            UntitledGame.game.physics.arcade.moveToPointer(this.sprite, this.getSpeed() * UntitledGame.game.time.physicsElapsed);
+        Bomb.prototype.shootTowards = function (x, y) {
+            var deltaX = x - this.sprite.body.x;
+            var deltaY = y - this.sprite.body.y;
+            var velocity = new Phaser.Point(deltaX, deltaY).normalize().multiply(this.speed, this.speed);
+            this.sprite.body.velocity.setTo(velocity.x, velocity.y);
         };
-        SpaceShip.prototype.Stop = function () {
-            this.isMoving = false;
-            this.sprite.body.velocity.x = 0;
-            this.sprite.body.velocity.y = 0;
+        Bomb.prototype.tweenTint = function (startColor, endColor, time) {
+            var obj = this.sprite;
+            var colorBlend = { step: 0 };
+            var colorTween = UntitledGame.game.add.tween(colorBlend).to({ step: 100 }, time);
+            colorTween.onUpdateCallback(function () {
+                obj.tint = Phaser.Color.interpolateColor(startColor, endColor, 100, colorBlend.step);
+            });
+            obj.tint = startColor;
+            colorTween.start();
         };
-        SpaceShip.prototype.update = function () {
-            if (UI.ui.mouseDown) {
-                this.Move();
-            }
-            else {
-                this.Stop();
-            }
-        };
-        SpaceShip.prototype.render = function () {
-            this.renderHealth();
-        };
-        SpaceShip.prototype.renderHealth = function () {
-            this.progressBar.percent = this.health;
-            this.progressBar.draw();
-        };
-        SpaceShip.prototype.getSpeed = function () {
-            var speed;
-            var mouseX = UntitledGame.game.input.mousePointer.x;
-            var mouseY = UntitledGame.game.input.mousePointer.y;
-            var distance = Phaser.Math.distance(this.sprite.x, this.sprite.y, UntitledGame.game.camera.x + mouseX, UntitledGame.game.camera.y + mouseY);
-            return distance * this.SPEED;
-        };
-        return SpaceShip;
+        return Bomb;
     }());
-    GameObjects.SpaceShip = SpaceShip;
+    GameObjects.Bomb = Bomb;
 })(GameObjects || (GameObjects = {}));
-/// <reference path="../GameObjects/ProgressBar.ts" />
-/// <reference path="../GameObjects/SpaceShip.ts" />
-var GameRooms;
-(function (GameRooms) {
-    var MainRoom = (function (_super) {
-        __extends(MainRoom, _super);
-        function MainRoom() {
-            return _super.call(this) || this;
-        }
-        MainRoom.prototype.create = function () {
-            // Show the menu
-            UI.ui.roomMenu.show();
-            this.spaceShip = new GameObjects.SpaceShip(100, 100);
-        };
-        MainRoom.prototype.update = function () {
-            this.spaceShip.update();
-        };
-        MainRoom.prototype.shutdown = function () {
-            UI.ui.roomMenu.hide();
-        };
-        return MainRoom;
-    }(Phaser.State));
-    GameRooms.MainRoom = MainRoom;
-})(GameRooms || (GameRooms = {}));
 /// <reference path="app.ts" />
 var UI;
 (function (UI_1) {
@@ -298,11 +278,13 @@ var UI;
         }
         UI.prototype.mouseEvents = function () {
             var ui = this;
-            document.body.onmousedown = function () {
-                ui.mouseDown = true;
+            document.onmousedown = function (e) {
+                if (e.which == 1)
+                    ui.mouseLeftDown = true;
             };
-            document.body.onmouseup = function () {
-                ui.mouseDown = false;
+            document.onmouseup = function (e) {
+                if (e.which == 1)
+                    ui.mouseLeftDown = false;
             };
         };
         return UI;
