@@ -5,6 +5,10 @@
     },
     "files": [
 		// Game Objects
+		"Scripts/GameOBjects/EnemyShip.ts",
+		"Scripts/GameObjects/WorldGenerator.ts",
+		"Scripts/GameObjects/GameObjects.ts",
+		"Scripts/GameObjects/Planet.ts",
 		"Scripts/GameObjects/Bomb.ts",
 		"Scripts/GameObjects/SpaceShip.ts",
 		"Scripts/GameObjects/ProgressBar.ts",

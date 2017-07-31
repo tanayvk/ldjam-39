@@ -41,6 +41,8 @@ var GameRooms;
             var loaderBar = this.game.add.sprite(this.game.world.centerX - 128, this.game.world.centerY + 256, "loaderBar");
             this.game.load.setPreloadSprite(loaderBar);
             this.game.load.image("spaceship", "Assets/Images/spaceship.png");
+            this.game.load.image("enemyship", "Assets/Images/enemyship.png");
+            this.game.load.image("planet", "Assets/Images/planet.png");
             this.game.load.image("bomb", "Assets/Images/bomb.png");
         };
         Loader.prototype.create = function () {
@@ -121,13 +123,17 @@ var GameObjects;
 (function (GameObjects) {
     var SpaceShip = (function () {
         function SpaceShip(x, y) {
-            this.MAX_SPEED = 300;
-            this.BOMB_SPEED = 3000;
+            this.wrappedX = 0;
+            this.wrappedY = 0;
+            this.apparentX = 0;
+            this.apparentY = 0;
+            this.MAX_SPEED = 800;
+            this.BOMB_SPEED = 2000;
             this.sprite = UntitledGame.game.add.sprite(x, y, "spaceship");
             this.sprite.tint = 0x7021FF;
             this.sprite.anchor.setTo(0.5, 0.5);
             UntitledGame.game.physics.arcade.enable(this.sprite);
-            this.sprite.body.drag.set(100);
+            this.sprite.body.drag.set(200);
             this.sprite.body.maxVelocity.set(this.MAX_SPEED);
             this.cursors = UntitledGame.game.input.keyboard.createCursorKeys();
             this.handleBombs();
@@ -145,12 +151,14 @@ var GameObjects;
                 this.sprite.body.angularVelocity = 300;
             else
                 this.sprite.body.angularVelocity = 0;
+            this.apparentX = this.wrappedX + this.sprite.x;
+            this.apparentY = this.wrappedY + this.sprite.y;
         };
         SpaceShip.prototype.handleBombs = function () {
             var ship = this;
             UntitledGame.game.input.onDown.add(function () {
                 var bomb = new GameObjects.Bomb(ship.sprite.x, ship.sprite.y, ship.BOMB_SPEED);
-                bomb.shootTowards(UntitledGame.game.input.x, UntitledGame.game.input.y);
+                bomb.shootTowards(UntitledGame.game.input.x + UntitledGame.game.camera.x, UntitledGame.game.input.y + UntitledGame.game.camera.y);
                 bomb.tweenTint(0xFF8925, 0x3EFF46, 1000); // a shade of orage to a shade of lime
             });
         };
@@ -165,19 +173,82 @@ var GameRooms;
     var MainRoom = (function (_super) {
         __extends(MainRoom, _super);
         function MainRoom() {
-            return _super.call(this) || this;
+            var _this = _super.call(this) || this;
+            _this.PART_SIZE = 1000;
+            _this.DIMENSION = 5;
+            return _this;
         }
+        MainRoom.prototype.init = function () {
+            GameObjects.worldGenerator = this.worldGenerator = new GameObjects.WorldGenerator(this.PART_SIZE, this.DIMENSION);
+            this.worldGenerator.generateWorld();
+        };
         MainRoom.prototype.create = function () {
             // Show the menu
             UI.ui.roomMenu.show();
-            this.spaceShip = new GameObjects.SpaceShip(400, 400);
-            UntitledGame.game.camera.follow(this.spaceShip.sprite);
+            GameObjects.spaceShip = this.spaceShip = new GameObjects.SpaceShip(this.game.world.width / 2, this.game.world.height / 2);
+            UntitledGame.game.world.camera.follow(this.spaceShip.sprite);
+            this.shipPreviousPart = this.worldGenerator.coordGetPart(this.spaceShip.sprite.x, this.spaceShip.sprite.y);
+            this.createPlanets();
+            this.createEnemies();
         };
         MainRoom.prototype.update = function () {
+            var _this = this;
             this.spaceShip.update();
+            this.wrapShip(this.spaceShip, -150);
+            this.enemies.forEach(function (enemy) {
+                _this.wrapShip(enemy, 0);
+            });
+            var shipCurrentPart = this.worldGenerator.coordGetPart(this.spaceShip.wrappedX + this.spaceShip.sprite.x, this.spaceShip.wrappedY + this.spaceShip.sprite.y);
+            if (!this.shipPreviousPart.equals(shipCurrentPart)) {
+                this.shipPreviousPart = shipCurrentPart;
+                this.shipChangedPart(shipCurrentPart);
+                //console.log(this.worldGenerator.partExists(shipCurrentPart));
+            }
+        };
+        MainRoom.prototype.render = function () {
+            UntitledGame.game.debug.text(this.spaceShip.apparentX + " " + this.spaceShip.apparentY, 30, 700);
+            UntitledGame.game.debug.text(this.enemies[0].apparentX + " " + this.enemies[0].apparentY, 30, 760);
         };
         MainRoom.prototype.shutdown = function () {
             UI.ui.roomMenu.hide();
+        };
+        MainRoom.prototype.createPlanets = function () {
+            var planet = new GameObjects.Planet(600, 600);
+        };
+        MainRoom.prototype.shipChangedPart = function (currentPart) {
+            var startX = currentPart.x - 1;
+            var startY = currentPart.y - 1;
+            for (var i = 0; i < 3; i++) {
+                for (var j = 0; j < 3; j++) {
+                    var part = new GameObjects.Part(startX + i, startY + j);
+                    if (!this.worldGenerator.partExists(part))
+                        this.worldGenerator.loadPart(part);
+                }
+            }
+        };
+        MainRoom.prototype.wrapShip = function (ship, padding) {
+            var size = this.PART_SIZE * this.DIMENSION;
+            if (ship.sprite.x + padding < UntitledGame.game.world.bounds.x) {
+                ship.sprite.x = UntitledGame.game.world.bounds.right + padding;
+                ship.wrappedX -= size;
+            }
+            else if (ship.sprite.x - padding > UntitledGame.game.world.bounds.right) {
+                ship.sprite.x = UntitledGame.game.world.bounds.left - padding;
+                ship.wrappedX += size;
+            }
+            if (ship.sprite.y + padding < UntitledGame.game.world.bounds.top) {
+                ship.sprite.y = UntitledGame.game.world.bounds.bottom + padding;
+                ship.wrappedY -= size;
+            }
+            else if (ship.sprite.y - padding > UntitledGame.game.world.bounds.bottom) {
+                ship.sprite.y = UntitledGame.game.world.bounds.top - padding;
+                ship.wrappedY += size;
+            }
+        };
+        MainRoom.prototype.createEnemies = function () {
+            GameObjects.enemies = this.enemies = [];
+            var enemy = new GameObjects.EnemyShip(500, 500);
+            this.enemies.push(enemy);
         };
         return MainRoom;
     }(Phaser.State));
@@ -213,7 +284,7 @@ var UntitledGame;
     UntitledGame.tint = 0x234252;
     var Game = (function () {
         function Game() {
-            UntitledGame.game = new Phaser.Game(900, 900, Phaser.CANVAS, 'game', {
+            UntitledGame.game = new Phaser.Game(800, 800, Phaser.CANVAS, 'game', {
                 create: this.create
             });
         }
@@ -234,6 +305,138 @@ window.onload = function () {
     new UntitledGame.Game();
     UI.ui = new UI.UI();
 };
+/// <reference path="../app.ts" />
+var GameObjects;
+(function (GameObjects) {
+    var EnemyShip = (function () {
+        function EnemyShip(x, y) {
+            this.wrappedX = 0;
+            this.wrappedY = 0;
+            this.apparentX = 0;
+            this.apparentY = 0;
+            this.MAX_SPEED = 500;
+            this.sprite = UntitledGame.game.add.sprite(x, y, "enemyship");
+            this.sprite.tint = 0x1f23a4;
+            this.sprite.anchor.setTo(0.5, 0.5);
+            UntitledGame.game.physics.arcade.enable(this.sprite);
+            GameObjects.enemyShip = this;
+            this.sprite.update = function () {
+                GameObjects.enemyShip.apparentX = GameObjects.enemyShip.wrappedX + GameObjects.enemyShip.sprite.body.x;
+                GameObjects.enemyShip.apparentY = GameObjects.enemyShip.wrappedY + GameObjects.enemyShip.sprite.body.y;
+                var deltaX = GameObjects.spaceShip.apparentX - GameObjects.enemyShip.apparentX;
+                var deltaY = GameObjects.spaceShip.apparentY - GameObjects.enemyShip.apparentY;
+                var velocity = new Phaser.Point(deltaX, deltaY).normalize().multiply(1000, 1000);
+                this.body.acceleration.setTo(velocity.x, velocity.y);
+                UntitledGame.game.physics.arcade.collide(this, GameObjects.spaceShip.sprite);
+            };
+            this.sprite.body.drag.set(100);
+            this.sprite.body.maxVelocity.set(this.MAX_SPEED);
+        }
+        EnemyShip.prototype.update = function () {
+        };
+        return EnemyShip;
+    }());
+    GameObjects.EnemyShip = EnemyShip;
+})(GameObjects || (GameObjects = {}));
+/// <reference path="../app.ts" />
+var GameObjects;
+(function (GameObjects) {
+    var WorldGenerator = (function () {
+        function WorldGenerator(partSize, dimension) {
+            this.partSize = partSize;
+            this.dimension = dimension;
+            // Initialize loadedParts
+            this.loadedParts = [];
+            for (var i = 0; i < this.dimension; i++) {
+                var column = [];
+                for (var j = 0; j < this.dimension; j++) {
+                    column.push(null);
+                }
+                this.loadedParts.push(column);
+            }
+        }
+        WorldGenerator.prototype.generateArea = function (x, y) {
+        };
+        WorldGenerator.prototype.clearArea = function (x, y) {
+        };
+        WorldGenerator.prototype.loadPart = function (part) {
+            // console.log("loading part...", part.x, part.y);
+            var area = part.getArea(this.dimension);
+            this.clearArea(area.x, area.y);
+            this.generateArea(area.x, area.y);
+            this.loadedParts[area.x][area.y] = part;
+        };
+        WorldGenerator.prototype.generateWorld = function () {
+            UntitledGame.game.world.setBounds(0, 0, this.dimension * this.partSize, this.dimension * this.partSize);
+            for (var i = 0; i < this.dimension; i++) {
+                for (var j = 0; j < this.dimension; j++) {
+                    this.loadPart(new Part(i, j));
+                }
+            }
+            this.loadPart(new Part(2, 2));
+        };
+        WorldGenerator.prototype.coordGetPart = function (x, y) {
+            var part = new Part(Math.floor(x / this.partSize), Math.floor(y / this.partSize));
+            return part;
+        };
+        WorldGenerator.prototype.partExists = function (part) {
+            var area = part.getArea(this.dimension);
+            if (this.loadedParts[area.x][area.y] && this.loadedParts[area.x][area.y].equals(part))
+                return true;
+            return false;
+        };
+        return WorldGenerator;
+    }());
+    GameObjects.WorldGenerator = WorldGenerator;
+    var Part = (function () {
+        function Part(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+        Part.prototype.getArea = function (dimension) {
+            var part = new Part(0, 0);
+            part.x = this.x % dimension;
+            if (part.x < 0)
+                part.x += dimension;
+            part.y = this.y % dimension;
+            if (part.y < 0)
+                part.y += dimension;
+            return part;
+        };
+        Part.prototype.equals = function (part) {
+            if (this.x === part.x && this.y === part.y)
+                return true;
+            return false;
+        };
+        return Part;
+    }());
+    GameObjects.Part = Part;
+})(GameObjects || (GameObjects = {}));
+/// <reference path="../app.ts" />
+var GameObjects;
+(function (GameObjects) {
+})(GameObjects || (GameObjects = {}));
+/// <reference path="../app.ts" />
+var GameObjects;
+(function (GameObjects) {
+    var Planet = (function () {
+        function Planet(x, y) {
+            this.sprite = UntitledGame.game.add.sprite(x, y, "planet");
+            UntitledGame.game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
+            this.sprite.body.moves = false;
+            this.sprite.update = GameObjects.Planet.update;
+        }
+        Planet.update = function () {
+            var _this = this;
+            UntitledGame.game.physics.arcade.collide(this, GameObjects.spaceShip.sprite);
+            GameObjects.enemies.forEach(function (enemy) {
+                UntitledGame.game.physics.arcade.collide(_this, enemy.sprite);
+            });
+        };
+        return Planet;
+    }());
+    GameObjects.Planet = Planet;
+})(GameObjects || (GameObjects = {}));
 /// <reference path="../app.ts"/>
 var GameObjects;
 (function (GameObjects) {
@@ -245,6 +448,7 @@ var GameObjects;
             this.sprite.anchor.setTo(0.5, 0.5);
             this.sprite.update = function () {
                 this.body.acceleration.setTo(-5 * this.body.velocity.x ^ 3, -5 * this.body.velocity.y ^ 3);
+                UntitledGame.game.world.wrap(this, 0, true);
             };
         }
         Bomb.prototype.shootTowards = function (x, y) {

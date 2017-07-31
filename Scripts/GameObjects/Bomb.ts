@@ -16,6 +16,7 @@ module GameObjects {
 
 			this.sprite.update = function() {
 				this.body.acceleration.setTo(-5 * this.body.velocity.x^3, -5 * this.body.velocity.y^3);
+				UntitledGame.game.world.wrap(this, 0, true);
 			};
 		}
 
