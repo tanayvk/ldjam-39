@@ -14,7 +14,6 @@ module GameObjects {
 
 		constructor(x, y) {
 			this.sprite = UntitledGame.game.add.sprite( x, y, "enemyship" );
-			this.sprite.tint = 0x1f23a4;
 			this.sprite.anchor.setTo(0.5, 0.5);
 
             UntitledGame.game.physics.arcade.enable(this.sprite);
@@ -28,8 +27,10 @@ module GameObjects {
 
                 var deltaX = GameObjects.spaceShip.apparentX - GameObjects.enemyShip.apparentX;
                 var deltaY = GameObjects.spaceShip.apparentY - GameObjects.enemyShip.apparentY;
-                var velocity = new Phaser.Point(deltaX, deltaY).normalize().multiply(1000, 1000);
-                this.body.acceleration.setTo(velocity.x, velocity.y);
+                var acceleration = new Phaser.Point(deltaX, deltaY).normalize().multiply(1000, 1000);
+                this.body.acceleration.setTo(acceleration.x, acceleration.y);
+
+                this.angle = Math.atan2(this.body.velocity.y, this.body.velocity.x) * 180 / Math.PI;
 
                 UntitledGame.game.physics.arcade.collide(this, GameObjects.spaceShip.sprite);
             };

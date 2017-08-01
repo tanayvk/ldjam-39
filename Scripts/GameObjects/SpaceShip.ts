@@ -12,12 +12,11 @@ module GameObjects {
 		apparentX: number = 0;
 		apparentY: number = 0;		
 
-		MAX_SPEED = 800;
+		MAX_SPEED = 500;
 		BOMB_SPEED = 2000;
 
 		constructor(x, y) {
 			this.sprite = UntitledGame.game.add.sprite( x, y, "spaceship" );
-			this.sprite.tint = 0x7021FF;
 			this.sprite.anchor.setTo(0.5, 0.5);
 
 			UntitledGame.game.physics.arcade.enable(this.sprite);
@@ -36,7 +35,7 @@ module GameObjects {
 			if (this.cursors.up.isDown)
 				UntitledGame.game.physics.arcade.accelerationFromRotation(this.sprite.rotation, 2000, this.sprite.body.acceleration);
 			else if (this.cursors.down.isDown)
-				UntitledGame.game.physics.arcade.accelerationFromRotation(this.sprite.rotation, -200, this.sprite.body.acceleration);	
+				UntitledGame.game.physics.arcade.accelerationFromRotation(this.sprite.rotation, -1000, this.sprite.body.acceleration);	
 			else
 				this.sprite.body.acceleration.set(0);
 

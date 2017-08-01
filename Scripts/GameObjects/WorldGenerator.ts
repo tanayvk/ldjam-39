@@ -6,7 +6,11 @@ module GameObjects {
         partSize: number;
         dimension: number;
 
+        sprites: Array<Array<Array<Phaser.Sprite>>>;
+
         loadedParts: Array<Array<Part>>;
+
+        PADDING = 200;
 
         constructor(partSize, dimension) {
             this.partSize = partSize;
@@ -14,27 +18,71 @@ module GameObjects {
 
 
             // Initialize loadedParts
+            this.sprites = [];
             this.loadedParts = [];
             for (var i = 0; i < this.dimension; i++) {
                 var column: Array<Part> = [];
+                var column2: Array<Array<Phaser.Sprite>> = [];
                 for(var j = 0; j < this.dimension; j++) {
                     column.push(null);
+                    column2.push([]);
                 }
                 this.loadedParts.push(column);
+                this.sprites.push(column2);
             }
-            
         }
 
         generateArea(x, y) {
             
+            this.placePlanet(x, y); 
+
+        }
+
+        placePlanet(x, y) {
+            var startX = x * this.partSize + this.PADDING;
+            var endX = startX + this.partSize - 2 * this.PADDING;
+            var startY = y * this.partSize + this.PADDING;
+            var endY = startY + this.partSize - 2 * this.PADDING;
+
+            var sprites = this.sprites[x][y];
+
+            var planet = null;
+            do {
+                
+                var planetX = startX + Math.random() * (endX - startX);
+                var planetY = startY + Math.random() * (endY - startY);
+
+                planet = new GameObjects.Planet(planetX, planetY);
+
+                loop2: 
+                    for (var i = 0; sprites && i < sprites.length; i++) {
+                        var sprite = sprites[i];
+                        if ( UntitledGame.game.physics.arcade.collide(planet.sprite, sprite) )
+                        {
+                            planet = null;
+                            break loop2;
+                        }
+                    }
+
+            } while (planet == null);
+
+
+            this.sprites[x][y].push(planet.sprite);
         }
 
         clearArea(x, y) {
-            
+            var sprites = this.sprites[x][y];
+
+            if (sprites.length < 1)
+                return;
+
+            sprites.forEach(sprite => {
+                sprite.destroy();
+            });
         }
 
         loadPart(part: Part) {
-            // console.log("loading part...", part.x, part.y);
+            console.log("loading part...", part.x, part.y);
             var area = part.getArea(this.dimension);
 
             this.clearArea(area.x, area.y);
@@ -45,12 +93,11 @@ module GameObjects {
 
         generateWorld() {
             UntitledGame.game.world.setBounds(0, 0, this.dimension*this.partSize, this.dimension*this.partSize);
-            for( var i = 0; i < this.dimension; i++ ) {
-                for ( var j = 0; j < this.dimension; j++ ) {
-                    this.loadPart(new Part(i, j));
-                }
-            }
-            this.loadPart(new Part(2, 2));
+            // for( var i = 0; i < this.dimension; i++ ) {
+            //     for ( var j = 0; j < this.dimension; j++ ) {
+            //         this.loadPart(new Part(i, j));
+            //     }
+            // }
         }
 
         coordGetPart( x, y ) {
