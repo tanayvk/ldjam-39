@@ -20,7 +20,7 @@ module GameObjects {
 			this.sprite.anchor.setTo(0.5, 0.5);
 
 			UntitledGame.game.physics.arcade.enable(this.sprite);
-			
+			this.sprite.body.setCircle(this.sprite.width / 2);
 			this.sprite.body.drag.set(200);
 			this.sprite.body.maxVelocity.set(this.MAX_SPEED);
 
@@ -55,7 +55,7 @@ module GameObjects {
 			UntitledGame.game.input.onDown.add(function() {
 				var bomb = new GameObjects.Bomb(ship.sprite.x, ship.sprite.y, ship.BOMB_SPEED);	
 				bomb.shootTowards(UntitledGame.game.input.x + UntitledGame.game.camera.x, UntitledGame.game.input.y + UntitledGame.game.camera.y);
-				bomb.tweenTint(0xFF8925, 0x3EFF46, 1000); // a shade of orage to a shade of lime
+				// bomb.tweenTint(0xFF8925, 0x3EFF46, 1000); // a shade of orage to a shade of lime
 			});
 		}
 	}

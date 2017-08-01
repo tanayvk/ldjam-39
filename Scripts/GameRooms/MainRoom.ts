@@ -9,8 +9,8 @@ module GameRooms {
 
 		shipPreviousPart: GameObjects.Part = new GameObjects.Part(0, 0);
 
-		PART_SIZE: number = 750;
-		DIMENSION: number = 5;
+		PART_SIZE: number = 1000;
+		DIMENSION: number = 10;
 
 		enemies: Array<GameObjects.EnemyShip>;
 
@@ -55,9 +55,9 @@ module GameRooms {
 		}
 
 		render() {
-			UntitledGame.game.debug.text(this.spaceShip.apparentX + " " + this.spaceShip.apparentY, 30, 700);
-			UntitledGame.game.debug.text(this.enemies[0].apparentX + " " + this.enemies[0].apparentY, 30, 760);
-			UntitledGame.game.debug.text(Math.atan2(this.enemies[0].sprite.body.velocity.y, this.enemies[0].sprite.body.velocity.x), 30, 780);
+			// UntitledGame.game.debug.text(this.spaceShip.apparentX + " " + this.spaceShip.apparentY, 30, 700);
+			// UntitledGame.game.debug.text(this.enemies[0].apparentX + " " + this.enemies[0].apparentY, 30, 760);
+			// UntitledGame.game.debug.text(Math.atan2(this.enemies[0].sprite.body.velocity.y, this.enemies[0].sprite.body.velocity.x), 30, 780);
 		}
 
 		shutdown() {

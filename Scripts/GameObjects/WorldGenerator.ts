@@ -10,7 +10,7 @@ module GameObjects {
 
         loadedParts: Array<Array<Part>>;
 
-        PADDING = 200;
+        PADDING = 500;
 
         constructor(partSize, dimension) {
             this.partSize = partSize;
@@ -35,7 +35,6 @@ module GameObjects {
         generateArea(x, y) {
             
             this.placePlanet(x, y); 
-
         }
 
         placePlanet(x, y) {
@@ -102,6 +101,11 @@ module GameObjects {
 
         coordGetPart( x, y ) {
             var part: Part = new Part(Math.floor(x / this.partSize), Math.floor(y / this.partSize));
+            return part;
+        }
+
+        spriteGetPart( sprite ) {
+            var part: Part = new Part(Math.floor(sprite.x / this.partSize), Math.floor(sprite.y / this.partSize));
             return part;
         }
 

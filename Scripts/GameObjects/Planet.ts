@@ -21,14 +21,19 @@ module GameObjects {
         constructor(x: number, y: number) {
             this.sprite = UntitledGame.game.add.sprite( x, y, this.planetSprites[Math.floor(Math.random() * this.planetSprites.length)]);
             UntitledGame.game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
+            this.sprite.body.setCircle(this.sprite.width / 2);
             this.sprite.body.moves = false;
             this.sprite.update = GameObjects.Planet.update;
 
         }
 
         static update() {
-            UntitledGame.game.physics.arcade.collide(this, GameObjects.spaceShip.sprite);
+
+            if (GameObjects.worldGenerator.spriteGetPart(this).equals(GameObjects.worldGenerator.spriteGetPart(GameObjects.spaceShip.sprite)))
+                UntitledGame.game.physics.arcade.collide(this, GameObjects.spaceShip.sprite);
+            
             GameObjects.enemies.forEach(enemy => {
+                if (GameObjects.worldGenerator.spriteGetPart(this).equals(GameObjects.worldGenerator.spriteGetPart(enemy.sprite)))
                 UntitledGame.game.physics.arcade.collide(this, enemy.sprite);
             });
         }
