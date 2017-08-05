@@ -31,12 +31,13 @@ module GameObjects {
                 this.body.acceleration.setTo(acceleration.x, acceleration.y);
 
                 this.angle = Math.atan2(this.body.velocity.y, this.body.velocity.x) * 180 / Math.PI;
-                
+
                 if (GameObjects.worldGenerator.spriteGetPart(this).equals(GameObjects.worldGenerator.spriteGetPart(GameObjects.spaceShip.sprite)))
                     UntitledGame.game.physics.arcade.collide(this, GameObjects.spaceShip.sprite);
             };
 			this.sprite.body.drag.set(100);
-			this.sprite.body.maxVelocity.set(this.MAX_SPEED);
+            this.sprite.body.maxVelocity.set(this.MAX_SPEED);
+            this.sprite.body.bounce.set(3);
 		}
 
 		update() {

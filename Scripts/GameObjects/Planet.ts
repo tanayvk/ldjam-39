@@ -15,7 +15,11 @@ module GameObjects {
 			"stripe",
 			"pluto",
 			"wood",
-			"tile"
+            "tile",
+            "iris",
+            "earth",
+            "moon",
+            "mercury"
         ];
 
         constructor(x: number, y: number) {
@@ -30,7 +34,9 @@ module GameObjects {
         static update() {
 
             if (GameObjects.worldGenerator.spriteGetPart(this).equals(GameObjects.worldGenerator.spriteGetPart(GameObjects.spaceShip.sprite)))
+            {
                 UntitledGame.game.physics.arcade.collide(this, GameObjects.spaceShip.sprite);
+            }    
             
             GameObjects.enemies.forEach(enemy => {
                 if (GameObjects.worldGenerator.spriteGetPart(this).equals(GameObjects.worldGenerator.spriteGetPart(enemy.sprite)))

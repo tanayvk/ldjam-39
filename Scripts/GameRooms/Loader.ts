@@ -31,10 +31,10 @@ module GameRooms {
 			this.game.load.image( "pluto", "Assets/Images/planets/pluto.png" );
 			this.game.load.image( "wood", "Assets/Images/planets/wood.png" );
 			this.game.load.image( "tile", "Assets/Images/planets/tile.png" );
-			// this.game.load.image( "neptune", "Assets/Images/planets/neptune.png" );
-			// this.game.load.image( "neptune", "Assets/Images/planets/neptune.png" );
-			// this.game.load.image( "neptune", "Assets/Images/planets/neptune.png" );
-			// this.game.load.image( "neptune", "Assets/Images/planets/neptune.png" );
+			this.game.load.image( "iris", "Assets/Images/planets/iris.png" );
+			this.game.load.image( "earth", "Assets/Images/planets/earth.png" );
+			this.game.load.image( "mercury", "Assets/Images/planets/mercury.png" );
+			this.game.load.image( "moon", "Assets/Images/planets/moon.png" );
 		}
 
 		create() {

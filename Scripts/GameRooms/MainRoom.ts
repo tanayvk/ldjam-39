@@ -9,8 +9,8 @@ module GameRooms {
 
 		shipPreviousPart: GameObjects.Part = new GameObjects.Part(0, 0);
 
-		PART_SIZE: number = 1000;
-		DIMENSION: number = 10;
+		PART_SIZE: number = 1920;
+		DIMENSION: number = 12;
 
 		enemies: Array<GameObjects.EnemyShip>;
 
@@ -32,6 +32,7 @@ module GameRooms {
 			UntitledGame.game.world.camera.follow(this.spaceShip.sprite);
 			this.shipPreviousPart = this.worldGenerator.coordGetPart(this.spaceShip.sprite.x, this.spaceShip.sprite.y);
 
+			GameObjects.enemies = this.enemies = [];
 			this.createEnemies();
 
 		}
@@ -39,7 +40,7 @@ module GameRooms {
 		update() {
 
 			this.spaceShip.update();
-			this.wrapShip(this.spaceShip, -150);
+			this.wrapShip(this.spaceShip, -400);
 
 			this.enemies.forEach(enemy => {
 				this.wrapShip(enemy, 0);
@@ -105,8 +106,6 @@ module GameRooms {
 		}
 
 		createEnemies() {
-			GameObjects.enemies = this.enemies = [];
-
 			var enemy = new GameObjects.EnemyShip(500, 500);
 			this.enemies.push(enemy);
 		}

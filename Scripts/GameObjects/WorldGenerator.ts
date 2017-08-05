@@ -10,8 +10,6 @@ module GameObjects {
 
         loadedParts: Array<Array<Part>>;
 
-        PADDING = 500;
-
         constructor(partSize, dimension) {
             this.partSize = partSize;
             this.dimension = dimension;
@@ -35,38 +33,41 @@ module GameObjects {
         generateArea(x, y) {
             
             this.placePlanet(x, y); 
+            // this.placePlanet(x, y); 
+
         }
 
         placePlanet(x, y) {
-            var startX = x * this.partSize + this.PADDING;
-            var endX = startX + this.partSize - 2 * this.PADDING;
-            var startY = y * this.partSize + this.PADDING;
-            var endY = startY + this.partSize - 2 * this.PADDING;
+
+            var planet = new GameObjects.Planet(0, 0);
+
+            var startX = Math.max(UntitledGame.game.width, x * this.partSize + planet.sprite.width/2);
+            var endX = Math.min(this.dimension * this.partSize - UntitledGame.game.width, startX + this.partSize - planet.sprite.width);
+            var startY = Math.max(UntitledGame.game.height, y * this.partSize + planet.sprite.height/2);
+            var endY = Math.min(this.dimension * this.partSize - UntitledGame.game.height, startY + this.partSize - planet.sprite.height);
 
             var sprites = this.sprites[x][y];
 
-            var planet = null;
             do {
                 
-                var planetX = startX + Math.random() * (endX - startX);
-                var planetY = startY + Math.random() * (endY - startY);
-
-                planet = new GameObjects.Planet(planetX, planetY);
+                planet.sprite.x = startX + Math.random() * (endX - startX);
+                planet.sprite.y = startY + Math.random() * (endY - startY);
 
                 loop2: 
                     for (var i = 0; sprites && i < sprites.length; i++) {
                         var sprite = sprites[i];
                         if ( UntitledGame.game.physics.arcade.collide(planet.sprite, sprite) )
                         {
-                            planet = null;
+                            planet.sprite.x = planet.sprite.y = 0;
                             break loop2;
                         }
                     }
 
-            } while (planet == null);
+            } while (planet.sprite.x == 0 && planet.sprite.y == 0);
 
 
             this.sprites[x][y].push(planet.sprite);
+            console.log(planet.sprite.x, planet.sprite.y, planet.sprite.x - this.partSize*this.dimension, planet.sprite.y - this.partSize*this.dimension);
         }
 
         clearArea(x, y) {
@@ -81,7 +82,6 @@ module GameObjects {
         }
 
         loadPart(part: Part) {
-            console.log("loading part...", part.x, part.y);
             var area = part.getArea(this.dimension);
 
             this.clearArea(area.x, area.y);

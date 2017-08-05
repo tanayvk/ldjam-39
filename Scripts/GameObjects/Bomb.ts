@@ -27,6 +27,10 @@ module GameObjects {
 			this.sprite.body.velocity.setTo(velocity.x, velocity.y);
 		}
 
+		explode() {
+			this.sprite.destroy();
+		}
+
 		tweenTint(startColor, endColor, time) { 
 			var obj = this.sprite;
 			
