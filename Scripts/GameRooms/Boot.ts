@@ -15,6 +15,7 @@ module GameRooms {
 			this.game.physics.startSystem( Phaser.Physics.ARCADE );
 
 			this.game.state.start( "loader" );
+			UntitledGame.tweenManager = new Phaser.TweenManager(UntitledGame.game);
 		}
 
 	}

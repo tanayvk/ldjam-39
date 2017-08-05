@@ -42,9 +42,21 @@ module GameRooms {
 			this.spaceShip.update();
 			this.wrapShip(this.spaceShip, -400);
 
-			this.enemies.forEach(enemy => {
-				this.wrapShip(enemy, 0);
-			});
+			for ( var i = 0; i < this.enemies.length; i++ ) {
+				var enemy = this.enemies[i];
+				if (enemy != null) {
+
+					this.wrapShip(enemy, 0);
+					if (enemy.health < 0)
+					{
+						enemy.kill();
+						this.enemies[i] = null;
+					}
+				}
+
+			}
+
+
 
 			var shipCurrentPart = this.worldGenerator.coordGetPart(this.spaceShip.wrappedX + this.spaceShip.sprite.x, this.spaceShip.wrappedY + this.spaceShip.sprite.y);
 			if (!this.shipPreviousPart.equals(shipCurrentPart)) {
@@ -52,10 +64,16 @@ module GameRooms {
 				setTimeout(this.shipChangedPart(shipCurrentPart), 5);
 				//console.log(this.worldGenerator.partExists(shipCurrentPart));
 			}
-
 		}
 
 		render() {
+
+			this.enemies.forEach(function(enemy) {
+				if (enemy != null) {
+					enemy.renderHealth();
+				}
+			});
+
 			// UntitledGame.game.debug.text(this.spaceShip.apparentX + " " + this.spaceShip.apparentY, 30, 700);
 			// UntitledGame.game.debug.text(this.enemies[0].apparentX + " " + this.enemies[0].apparentY, 30, 760);
 			// UntitledGame.game.debug.text(Math.atan2(this.enemies[0].sprite.body.velocity.y, this.enemies[0].sprite.body.velocity.x), 30, 780);
@@ -106,7 +124,11 @@ module GameRooms {
 		}
 
 		createEnemies() {
-			var enemy = new GameObjects.EnemyShip(500, 500);
+			var enemy = new GameObjects.EnemyShip(10000, 10000);
+			this.enemies.push(enemy);
+			enemy = new GameObjects.EnemyShip(2356, 3467);
+			this.enemies.push(enemy);
+			enemy = new GameObjects.EnemyShip(3465, 17754);
 			this.enemies.push(enemy);
 		}
 

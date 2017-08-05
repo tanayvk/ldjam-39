@@ -12,13 +12,13 @@ module GameRooms {
 			var loaderBar = this.game.add.sprite( this.game.world.centerX - 128, this.game.world.centerY + 256, "loaderBar" );
 			this.game.load.setPreloadSprite( loaderBar );
 
-			this.game.load.image( "background-blank", "Assets/Images/background-blank.png");
 			this.game.load.image( "background-full", "Assets/Images/background-full.png");
 
 			this.game.load.image( "spaceship", "Assets/Images/player-ship.png" );
 			this.game.load.image( "enemyship", "Assets/Images/enemy-ship.png" );
-			this.game.load.image( "planet", "Assets/Images/planet.png" );
+
 			this.game.load.image( "bomb", "Assets/Images/bomb.png" );
+			this.game.load.image( "explosion", "Assets/Images/explosion.png" );
 
 			this.game.load.image( "neptune", "Assets/Images/planets/neptune.png" );
 			this.game.load.image( "mars", "Assets/Images/planets/mars.png" );

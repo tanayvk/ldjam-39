@@ -8,7 +8,8 @@
 
 module UntitledGame {
 	export var game;
-	export var tint = 0x234252;
+	export var tweenManager;
+
 	export class Game {
 
 		constructor() {

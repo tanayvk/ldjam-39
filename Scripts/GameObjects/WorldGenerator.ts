@@ -67,7 +67,6 @@ module GameObjects {
 
 
             this.sprites[x][y].push(planet.sprite);
-            console.log(planet.sprite.x, planet.sprite.y, planet.sprite.x - this.partSize*this.dimension, planet.sprite.y - this.partSize*this.dimension);
         }
 
         clearArea(x, y) {

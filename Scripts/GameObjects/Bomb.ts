@@ -17,7 +17,14 @@ module GameObjects {
 			this.sprite.update = function() {
 				this.body.acceleration.setTo(-5 * this.body.velocity.x^3, -5 * this.body.velocity.y^3);
 				UntitledGame.game.world.wrap(this, 0, true);
+
+				GameObjects.enemies.forEach(enemy => {
+					if (enemy)
+						UntitledGame.game.physics.arcade.collide(enemy.sprite, this);
+				});
 			};
+
+			UntitledGame.game.time.events.add(Phaser.Timer.SECOND * 1, this.explode, this);
 		}
 
 		shootTowards( x: number, y: number ) {
@@ -28,6 +35,7 @@ module GameObjects {
 		}
 
 		explode() {
+			new GameObjects.Explosion( this.sprite.x, this.sprite.y );
 			this.sprite.destroy();
 		}
 

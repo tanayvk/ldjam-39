@@ -6,6 +6,7 @@
     "files": [
 		// Game Objects
 		"Scripts/GameOBjects/EnemyShip.ts",
+		"Scripts/GameOBjects/Explosion.ts",
 		"Scripts/GameObjects/WorldGenerator.ts",
 		"Scripts/GameObjects/GameObjects.ts",
 		"Scripts/GameObjects/Planet.ts",

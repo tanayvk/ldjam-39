@@ -39,8 +39,8 @@ module GameObjects {
             }    
             
             GameObjects.enemies.forEach(enemy => {
-                if (GameObjects.worldGenerator.spriteGetPart(this).equals(GameObjects.worldGenerator.spriteGetPart(enemy.sprite)))
-                UntitledGame.game.physics.arcade.collide(this, enemy.sprite);
+                if (enemy && GameObjects.worldGenerator.spriteGetPart(this).equals(GameObjects.worldGenerator.spriteGetPart(enemy.sprite)))
+                    UntitledGame.game.physics.arcade.collide(this, enemy.sprite);
             });
         }
     }
